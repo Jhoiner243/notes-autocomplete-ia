@@ -1,98 +1,177 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Notes Back
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Backend de notas construido con NestJS, Prisma y PostgreSQL. Incluye un servicio de autocompletado por IA para ayudar a redactar notas a partir de un contexto y un prompt.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Tecnologías
 
-## Description
+- **NestJS 11** (HTTP + DI)
+- **Prisma** (ORM) + **PostgreSQL**
+- **AI SDK** (`ai` + `@ai-sdk/openai`) para LLMs de OpenAI
+- **PNPM** como gestor de paquetes
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Arquitectura (resumen)
 
-## Project setup
+- `src/contexts/completion` capa de autocompletado (application, domain, infra)
+- `src/contexts/users` capa de usuarios
+- `src/contexts/shared` utilidades compartidas (Prisma, DI)
+- `src/infraestructure/prisma` servicio de Prisma
 
-```bash
-$ pnpm install
+Flujo de autocompletado:
+
+- `CompletionController` → `CompletionUseCase` → `CompletionService` (AI SDK) → persistencia de uso en `UsageRecord` (Prisma)
+
+## Requisitos
+
+- Node.js 20+
+- PNPM 9+
+- Docker (opcional pero recomendado para la base de datos)
+
+## Variables de entorno
+
+Crea un archivo `.env` en la raíz con:
+
+```
+DATABASE_URL="postgresql://postgres:prisma@localhost:5432/postgres?schema=public"
+OPENAI_API_KEY="<tu_api_key_de_openai>"
+PORT=3000
 ```
 
-## Compile and run the project
+- **DATABASE_URL**: conexión a PostgreSQL.
+- **OPENAI_API_KEY**: clave de OpenAI para el autocompletado.
+- **PORT**: puerto HTTP (opcional, 3000 por defecto).
+
+## Base de datos con Docker
+
+Arranca PostgreSQL con Docker Compose:
 
 ```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+pnpm install
+docker compose up -d
 ```
 
-## Run tests
+El servicio crea un contenedor `postgres:16` escuchando en `localhost:5432` con usuario `postgres` y password `prisma`.
+
+## Prisma (generación del cliente y migraciones)
+
+Genera el cliente de Prisma y aplica migraciones:
 
 ```bash
-# unit tests
-$ pnpm run test
+# Generar cliente
+pnpm dlx prisma generate
 
-# e2e tests
-$ pnpm run test:e2e
+# Aplicar migraciones en desarrollo
+pnpm dlx prisma migrate dev
 
-# test coverage
-$ pnpm run test:cov
+# O bien, en entornos preparados (CI/Prod)
+pnpm dlx prisma migrate deploy
 ```
 
-## Deployment
+Si cambias el esquema (`prisma/schema.prisma`), vuelve a generar el cliente y ejecuta migraciones.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+## Ejecutar la aplicación
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+- Desarrollo (watch):
 
 ```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
+pnpm run start:dev
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+- Producción (compilar y ejecutar):
 
-## Resources
+```bash
+pnpm run build
+pnpm run start:prod
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+- Linter y tests:
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+```bash
+pnpm run lint
+pnpm run test
+pnpm run test:e2e
+```
 
-## Support
+## API
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Base URL por defecto: `http://localhost:3000`
 
-## Stay in touch
+### Autocompletado (IA)
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+- **POST** `/v1/completion/notes/:id/autocomplete`
 
-## License
+Body JSON:
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+```
+{
+  "prompt": "Texto del usuario a completar",
+  "context": "Contexto previo de la nota",
+  "token_max": 256
+}
+```
+
+Respuesta:
+
+```
+{
+  "completion": "Texto generado por IA"
+}
+```
+
+Notas:
+
+- Se usa `gpt-4o-mini` vía AI SDK (`@ai-sdk/openai`).
+- Se registra el uso en la tabla `UsageRecord` con el endpoint `Autocomplete` (campos: `userId`, `tokensConsumed`, `costEstimated`). Por ahora el `userId` es un placeholder y puede integrarse con tu sistema de auth.
+
+### Usuarios (ejemplos existentes)
+
+- **POST** `/v1/users/create-user` → crea un usuario.
+- **PUT** `/v1/users/update-user` → endpoint esqueleto (por completar lógica).
+
+## Esquema Prisma (tablas relevantes)
+
+- `User`: usuarios del sistema.
+- `Nota`: notas (borrador de estructura para futuras funcionalidades).
+- `Subscription`, `BillingHistory`: facturación (esqueleto).
+- `UsageRecord`: registro de uso de la IA por endpoint.
+
+## Estructura de carpetas (selectiva)
+
+```
+src/
+  app.module.ts
+  main.ts
+  contexts/
+    completion/
+      application/use-cases/completion/
+        completion.dto.ts
+        completion.use-case.ts
+      domain/
+        interface/completion.interface.ts
+      infraestructure/http-api/completion/
+        completion.controller.ts
+        route.constants.ts
+        service/completion.service.ts
+        repositories/completion.repository.ts
+    users/
+      application/...
+      domain/...
+      infrastructure/http-api/...
+    shared/
+      prisma/prisma.module.ts
+      dependency-injection/custom-injectable.ts
+infraestructure/prisma/prisma.service.ts
+prisma/
+  schema.prisma
+  migrations/
+```
+
+## Troubleshooting
+
+- "Cannot find module '@ai-sdk/openai'": ejecuta `pnpm add @ai-sdk/openai ai` y asegúrate de usar Node 20+.
+- Conexión a DB fallida: verifica `docker compose ps`, el puerto `5432` libre y `DATABASE_URL` correcto.
+- Prisma client faltante: corre `pnpm dlx prisma generate`.
+- 401/403 en IA: revisa `OPENAI_API_KEY`.
+
+## Licencia
+
+MIT (verifica si tu proyecto requiere un archivo LICENSE).
