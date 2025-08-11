@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id String @unique() @default(uuid())
+  email String
+  name String
+  lastName String
+  role UserRole @default(enfermera)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Nota {
+  id String @unique @default(uuid())
+  title String
+  content String
+  metadata Json
+  isDelete Boolean
+  version DateTime
+  createdAt DateTime @updatedAt 
+}
+
+model Subscription {
+  id String @unique @default(uuid()) 
+  userId String
+  StripeSubscriptionId String
+  planId String
+  status StatusSubscription
+  currentPeriodEnd DateTime
+}
+
+model BillingHistory {
+  id String @unique() @default(uuid())
+  userId String
+  stripeInvoiceId String @unique
+  amount Float
+  status String
+  createdAt DateTime
+}
+
+model UsageRecord {
+  id String @unique @default(uuid())
+  userId String
+  endpoint EndpointUsage
+  tokensConsumed Int
+  costEstimated Float
+  createdAt DateTime @default(now())
+}
+
+enum StatusSubscription {
+  Active
+  Past_due
+  Canceled
+}
+
+enum UserRole {
+  enfermera
+  doctor
+  otro
+}
+
+enum EndpointUsage {
+  Autocomplete
+}
