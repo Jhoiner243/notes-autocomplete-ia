@@ -11,7 +11,10 @@ import { DeleteNotaController } from './infraestructure/http-api/delete-nota/del
 import { FindNotasByTitleController } from './infraestructure/http-api/find-notas-by-title/find-notas-by-title.controller';
 import { FindNotasByUserController } from './infraestructure/http-api/find-notas-by-user/find-notas-by-user.controller';
 import { GetNotaByIdController } from './infraestructure/http-api/get-nota-by-id/get-nota-by-id.controller';
-import { NotasPersistence } from './infraestructure/http-api/persistence/notas.persistence';
+import {
+  NotasPersistence,
+  NotasPersistenceToken,
+} from './infraestructure/http-api/persistence/notas.persistence';
 import { UpdateNotaController } from './infraestructure/http-api/update-nota/update-nota.controller';
 
 @Module({
@@ -32,7 +35,7 @@ import { UpdateNotaController } from './infraestructure/http-api/update-nota/upd
     FindNotasByUserUseCase,
     NotasPersistence,
     {
-      provide: INotasRepository,
+      provide: NotasPersistenceToken,
       useExisting: NotasPersistence,
     },
   ],

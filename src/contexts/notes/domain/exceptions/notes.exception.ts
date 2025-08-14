@@ -4,6 +4,12 @@ class DomainException extends Error {
   }
 }
 
+export class NotaExceptionError extends DomainException {
+  constructor(message: string) {
+    super(message);
+  }
+}
+
 export class notesTitleExceptionError extends DomainException {
   constructor(message: string) {
     super(message);
