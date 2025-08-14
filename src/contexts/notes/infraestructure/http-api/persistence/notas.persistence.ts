@@ -2,7 +2,6 @@ import { Inject } from '@nestjs/common';
 import { PrismaService } from '../../../../../infraestructure/prisma/prisma.service';
 import { Injectable as CustomInjectable } from '../../../../shared/dependency-injection/custom-injectable';
 import { NotasEntity } from '../../../domain/entities/create-notas.entity';
-import { UpdateNoteDto } from '../../../domain/entities/update-nota.entity';
 import { INotasRepository } from '../../../domain/repository/notas.repository';
 import { NotaMapper } from './nota.mapper';
 
@@ -20,6 +19,15 @@ export class NotasPersistence implements INotasRepository {
       },
     });
     return { message: 'Nota eliminada correctamente' };
+  }
+
+  async hardDeleteNotes(id: string): Promise<{ message: string }> {
+    await this.prisma.nota.delete({
+      where: {
+        id,
+      },
+    });
+    return { message: 'Nota eliminada permanentemente' };
   }
 
   async findById(id: string): Promise<NotasEntity | null> {
@@ -49,14 +57,24 @@ export class NotasPersistence implements INotasRepository {
     return notasFromDb.map((nota) => NotaMapper.toDomain(nota));
   }
 
-  async updateNote(id: string, note: UpdateNoteDto): Promise<void> {
+  async findAllByUser(userId: string): Promise<NotasEntity[]> {
+    const notasFromDb = await this.prisma.nota.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+    });
+    return notasFromDb.map((n) => NotaMapper.toDomain(n));
+  }
+
+  async updateNote(note: NotasEntity): Promise<void> {
     await this.prisma.nota.update({
       data: {
+        title: note.title.value,
         content: note.content,
-        title: note.title,
+        metadata: note.metadata.getValuePrimitiveMetadata(),
+        version: note.version,
       },
       where: {
-        id: id,
+        id: note.id,
       },
     });
   }
@@ -69,7 +87,7 @@ export class NotasPersistence implements INotasRepository {
         content: note.content,
         metadata: note.metadata.getValuePrimitiveMetadata(),
         version: note.version,
-
+        // TODO: obtener userId real del contexto autenticado
         user: {
           connect: {
             id: '1',

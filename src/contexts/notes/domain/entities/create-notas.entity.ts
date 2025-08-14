@@ -33,6 +33,25 @@ export class NotasEntity {
     return Math.floor(Math.random() * 1000000) + 1;
   }
 
+  public static update(
+    existing: NotasEntity,
+    params: {
+      title?: TitleNoteValueObject;
+      content?: string;
+      metadata?: MetadataValueObjects;
+    },
+  ): NotasEntity {
+    return new NotasEntity(
+      existing.id,
+      params.title ?? existing.title,
+      params.content ?? existing.content,
+      existing.isDelete,
+      params.metadata ?? existing.metadata,
+      this.versionNote(),
+      existing.createdAt,
+    );
+  }
+
   public notaId() {
     return this.id;
   }
