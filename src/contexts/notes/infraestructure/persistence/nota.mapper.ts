@@ -1,7 +1,7 @@
-import { Nota as PrismaNota } from '../../../../../../generated/prisma';
-import { NotasEntity } from '../../../domain/entities/create-notas.entity';
-import { MetadataValueObjects } from '../../../domain/value-objects/metadata-json.value-object';
-import { TitleNoteValueObject } from '../../../domain/value-objects/title-note.value-object';
+import { Nota as PrismaNota } from '../../../../../generated/prisma';
+import { NotasEntity } from '../../domain/entities/create-notas.entity';
+import { MetadataValueObjects } from '../../domain/value-objects/metadata-json.value-object';
+import { TitleNoteValueObject } from '../../domain/value-objects/title-note.value-object';
 
 export class NotaMapper {
   // Convierte de la persistencia (Prisma) al dominio (Entity)

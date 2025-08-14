@@ -1,10 +1,10 @@
 import { Inject } from '@nestjs/common';
-import { Prisma } from '../../../../../../generated/prisma/client';
-import { PrismaService } from '../../../../../infraestructure/prisma/prisma.service';
-import { Injectable as CustomInjectable } from '../../../../shared/dependency-injection/custom-injectable';
-import { PersistenceError } from '../../../../shared/exceptions/persistence.exception';
-import { NotasEntity } from '../../../domain/entities/create-notas.entity';
-import { INotasRepository } from '../../../domain/repository/notas.repository';
+import { Prisma } from '../../../../../generated/prisma/client';
+import { PrismaService } from '../../../../infraestructure/prisma/prisma.service';
+import { Injectable as CustomInjectable } from '../../../shared/dependency-injection/custom-injectable';
+import { PersistenceError } from '../../../shared/exceptions/persistence.exception';
+import { NotasEntity } from '../../domain/entities/create-notas.entity';
+import { INotasRepository } from '../../domain/repository/notas.repository';
 import { NotaMapper } from './nota.mapper';
 
 export const NotasPersistenceToken = Symbol('NotasPersistenceToken');

@@ -4,7 +4,7 @@ import { NotasEntity } from '../../../domain/entities/create-notas.entity';
 import { INotasRepository } from '../../../domain/repository/notas.repository';
 import { MetadataValueObjects } from '../../../domain/value-objects/metadata-json.value-object';
 import { TitleNoteValueObject } from '../../../domain/value-objects/title-note.value-object';
-import { NotasPersistenceToken } from '../../../infraestructure/http-api/persistence/notas.persistence';
+import { NotasPersistenceToken } from '../../../infraestructure/persistence/notas.persistence';
 import { CreateNotaCommand } from '../../commands/create-nota.command';
 
 @CustomInjectable()
