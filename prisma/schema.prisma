@@ -15,64 +15,79 @@ datasource db {
 }
 
 model User {
-  id String @unique() @default(uuid())
-  email String
-  name String
-  lastName String
-  role UserRole @default(enfermera)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              String           @id @default(uuid())
+  email           String           @unique
+  name            String
+  lastName        String 
+  role            UserRole         @default(ENFERMERA)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  notas           Nota[]
+  subscriptions   Subscription[]
+  usageRecords    UsageRecord[]    
 }
 
 model Nota {
-  id String @unique @default(uuid())
-  title String
-  content String
-  metadata Json
-  isDelete Boolean
-  version DateTime
-  createdAt DateTime @updatedAt 
+  id        String   @id @default(uuid())
+  title     String
+  content   String
+  metadata  Json
+  isDelete  Boolean  @default(false)
+  version   Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model Subscription {
-  id String @unique @default(uuid()) 
-  userId String
-  StripeSubscriptionId String
-  planId String
-  status StatusSubscription
-  currentPeriodEnd DateTime
+  id                   String           @id @default(uuid())
+  userId               String
+  stripeSubscriptionId String           @unique
+  planId               String
+  status               StatusSubscription
+  currentPeriodEnd     DateTime
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+
+  user                 User             @relation(fields: [userId], references: [id])
+  billingHistory       BillingHistory[]
 }
 
 model BillingHistory {
-  id String @unique() @default(uuid())
-  userId String
-  stripeInvoiceId String @unique
-  amount Float
-  status String
-  createdAt DateTime
+  id              String       @id @default(uuid())
+  subscriptionId  String      
+  stripeInvoiceId String       @unique
+  amount          Float
+  status          String
+  createdAt       DateTime     @default(now())
+
+  subscription    Subscription @relation(fields: [subscriptionId], references: [id])
 }
 
 model UsageRecord {
-  id String @unique @default(uuid())
-  userId String
-  endpoint EndpointUsage
+  id             String        @id @default(uuid())
+  userId         String
+  endpoint       EndpointUsage
   tokensConsumed Int
-  costEstimated Float
-  createdAt DateTime @default(now())
+  costEstimated  Float
+  createdAt      DateTime      @default(now())
+
+  user           User          @relation(fields: [userId], references: [id])
 }
 
 enum StatusSubscription {
-  Active
-  Past_due
-  Canceled
+  ACTIVE
+  PAST_DUE
+  CANCELED
 }
 
 enum UserRole {
-  enfermera
-  doctor
-  otro
+  ENFERMERA
+  DOCTOR
+  OTRO
 }
 
 enum EndpointUsage {
-  Autocomplete
+  AUTOCOMPLETE
 }

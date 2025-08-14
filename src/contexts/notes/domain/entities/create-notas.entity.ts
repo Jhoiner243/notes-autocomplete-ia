@@ -1,15 +1,37 @@
+import { randomUUID } from 'crypto';
 import { MetadataValueObjects } from '../value-objects/metadata-json.value-object';
+import { TitleNoteValueObject } from '../value-objects/title-note.value-object';
 
 export class NotasEntity {
   constructor(
-    private id: string,
-    private title: string,
-    private content: string,
-    private isDelete: boolean,
-    private metadata: MetadataValueObjects,
-    private version: Date,
-    private createdAt: Date,
+    public id: string,
+    public title: TitleNoteValueObject,
+    public content: string,
+    public isDelete: boolean,
+    public metadata: MetadataValueObjects,
+    public version: number,
+    public createdAt: Date,
   ) {}
+
+  public static create(params: {
+    title: TitleNoteValueObject;
+    content: string;
+    metadata: MetadataValueObjects;
+  }): NotasEntity {
+    return new NotasEntity(
+      randomUUID(),
+      params.title,
+      params.content,
+      false,
+      params.metadata,
+      this.versionNote(),
+      new Date(),
+    );
+  }
+
+  public static versionNote() {
+    return Math.floor(Math.random() * 1000000) + 1;
+  }
 
   public notaId() {
     return this.id;
