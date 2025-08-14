@@ -1,8 +1,9 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { GetNotaByIdQuery } from '../../../application/commands/get-nota-by-id.query';
 import { GetNotaByIdUseCase } from '../../../application/use-cases/get-nota-by-id/get-nota-by-id.use-case';
+import { ROUTE_NOTAS } from '../route.constant';
 
-@Controller('notes')
+@Controller(ROUTE_NOTAS)
 export class GetNotaByIdController {
   constructor(private readonly useCase: GetNotaByIdUseCase) {}
 

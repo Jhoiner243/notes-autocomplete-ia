@@ -1,8 +1,9 @@
 import { Controller, Delete, Param, Query } from '@nestjs/common';
 import { DeleteNotaCommand } from '../../../application/commands/delete-nota.command';
 import { DeleteNotaUseCase } from '../../../application/use-cases/delete-nota/delete-nota.use-case';
+import { ROUTE_NOTAS } from '../route.constant';
 
-@Controller('notes')
+@Controller(ROUTE_NOTAS)
 export class DeleteNotaController {
   constructor(private readonly useCase: DeleteNotaUseCase) {}
 

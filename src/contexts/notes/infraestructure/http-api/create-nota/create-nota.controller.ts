@@ -1,9 +1,10 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { CreateNotaCommand } from '../../../application/commands/create-nota.command';
 import { CreateNotasUseCase } from '../../../application/use-cases/create-nota/create-nota.use-case';
+import { ROUTE_NOTAS } from '../route.constant';
 import { CreateNotaDto } from './create-nota.dto';
 
-@Controller('notes')
+@Controller(ROUTE_NOTAS)
 export class CreateNotaController {
   constructor(private readonly createNotaUseCase: CreateNotasUseCase) {}
 
@@ -13,7 +14,7 @@ export class CreateNotaController {
       note.title,
       note.content,
       note.metadata,
-      note.version,
+      1,
     );
     await this.createNotaUseCase.execute(cmd);
   }

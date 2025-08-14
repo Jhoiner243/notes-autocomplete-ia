@@ -2,8 +2,8 @@ import { IsEmail, IsEnum, IsString, Length } from 'class-validator';
 import { UserRole as Roles } from '../../../domain/value-objects/user.role.vo';
 
 export enum UserRole {
-  enfermera = 'enfermera',
-  doctor = 'doctor',
+  ENFERMERA = 'ENFERMERA',
+  DOCTOR = 'DOCTOR',
 }
 
 export class UserCreateDto {

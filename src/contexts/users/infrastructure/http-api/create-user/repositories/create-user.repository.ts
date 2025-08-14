@@ -7,7 +7,10 @@ export class UserCreateRepository {
   constructor(private prisma: PrismaService) {}
   async createUser(user: UserCreateDto) {
     await this.prisma.user.create({
-      data: user,
+      data: {
+        ...user,
+        role: 'ENFERMERA',
+      },
     });
   }
 }

@@ -1,6 +1,7 @@
 import { Body, Controller, Param, Patch } from '@nestjs/common';
 import { UpdateNotaCommand } from '../../../application/commands/update-nota.command';
 import { UpdateNotaUseCase } from '../../../application/use-cases/update-nota/update-nota.use-case';
+import { ROUTE_NOTAS } from '../route.constant';
 
 class UpdateNotaDto {
   title?: string;
@@ -8,7 +9,7 @@ class UpdateNotaDto {
   metadata?: object;
 }
 
-@Controller('notes')
+@Controller(ROUTE_NOTAS)
 export class UpdateNotaController {
   constructor(private readonly useCase: UpdateNotaUseCase) {}
 

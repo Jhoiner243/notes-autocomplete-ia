@@ -1,8 +1,9 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { FindNotasByTitleQuery } from '../../../application/commands/find-notas-by-title.query';
 import { FindNotasByTitleUseCase } from '../../../application/use-cases/find-notas-by-title/find-notas-by-title.use-case';
+import { ROUTE_NOTAS } from '../route.constant';
 
-@Controller('notes')
+@Controller(ROUTE_NOTAS)
 export class FindNotasByTitleController {
   constructor(private readonly useCase: FindNotasByTitleUseCase) {}
 

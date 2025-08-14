@@ -1,18 +1,17 @@
-import { IsJSON, IsNumber, IsString } from 'class-validator';
-import { MetadataValueObjects } from '../../../domain/value-objects/metadata-json.value-object';
+import { Type } from 'class-transformer';
+import { IsString, Length, ValidateNested } from 'class-validator';
+import { MetadataDto } from '../dto/metadata.dto';
 
 export class CreateNotaDto {
   @IsString()
+  @Length(1, 100)
   title: string;
 
   @IsString()
+  @Length(1, 10_000)
   content: string;
 
-  @IsJSON({
-    context: MetadataValueObjects,
-  })
-  metadata: object;
-
-  @IsNumber()
-  version: number;
+  @ValidateNested()
+  @Type(() => MetadataDto)
+  metadata: MetadataDto;
 }
