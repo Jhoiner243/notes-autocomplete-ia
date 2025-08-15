@@ -7,11 +7,11 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=prisma
     ports:
-      - "5432:5432"
+      - '5432:5432'
     networks:
       - prisma-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d postgres']
       interval: 5s
       timeout: 2s
       retries: 20
@@ -20,11 +20,27 @@ services:
     command: postgres -c listen_addresses='*'
     logging:
       options:
-        max-size: "10m"
-        max-file: "3"
+        max-size: '10m'
+        max-file: '3'
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: always
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    networks:
+      - prisma-network
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 2s
+      retries: 20
 
 networks:
   prisma-network:
 
 volumes:
   postgres_data:
+  redis_data:
