@@ -1,49 +1,42 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { openai } from '@ai-sdk/openai';
-import { Inject, Injectable } from '@nestjs/common';
-import { streamText } from 'ai';
-import { ICompletion } from '../../../../domain/interface/completion.interface';
-import { CompletionRepositoryImple } from '../repositories/completion.repository';
+import { Inject } from '@nestjs/common';
+import { LanguageModel, streamText } from 'ai';
+import { Injectable as CustomInjectable } from '../../../../../shared/dependency-injection/custom-injectable';
+import { ICompletion } from '../../../../domain/repositories/completion.repository';
+import { CompletionRepositoryImpleToken } from '../repositories/completion.repository';
+import { ModelSelectFromCompletion } from './model-select';
 
-@Injectable()
-export class CompletionService implements ICompletion {
+@CustomInjectable()
+export class CompletionService {
   constructor(
-    @Inject(CompletionRepositoryImple)
-    private completionRepository: CompletionRepositoryImple,
+    @Inject(CompletionRepositoryImpleToken)
+    private completionRepository: ICompletion,
+    @Inject(ModelSelectFromCompletion)
+    private modelSelectFromCompletion: ModelSelectFromCompletion,
   ) {}
 
   async completionSdkAi({
     prompt,
     context,
-    token_max,
   }: {
-    token_max: number;
     prompt: string;
     context: string;
   }): Promise<{ completion: string }> {
     const system =
       'Eres un asistente que autocompleta notas médicas. Responde en el mismo idioma del usuario. Sé conciso y clínicamente útil.';
 
+    const model: LanguageModel =
+      this.modelSelectFromCompletion.SelectModelFromCompletion('gpt-4o-mini');
+
     const result = streamText({
-      model: openai('gpt-4o-mini'),
+      model: model,
       system,
       prompt: `${context}\n\nUsuario: ${prompt}\nAsistente:`,
-      maxOutputTokens: token_max,
+      maxOutputTokens: 50,
       temperature: 0.2,
     });
 
-    const totalTokens = (await result.totalUsage).outputTokens ?? 0;
-    const costEstimated = (totalTokens / 1_000_000) * 5;
+    const completionText = await result.text;
 
-    const userId = 'anonymous-user';
-    await this.completionRepository.createUsageRecord({
-      userId,
-      endpoint: 'Autocomplete',
-      tokensConsumed: totalTokens,
-      costEstimated,
-    });
-
-    return { completion: await result.text };
+    return { completion: completionText };
   }
 }

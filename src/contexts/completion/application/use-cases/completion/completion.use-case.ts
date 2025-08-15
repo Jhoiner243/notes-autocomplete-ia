@@ -1,7 +1,7 @@
 import { Inject } from '@nestjs/common';
 import { Injectable as CustomInjectable } from '../../../../shared/dependency-injection/custom-injectable';
 import { CompletionService } from '../../../infraestructure/http-api/completion/service/completion.service';
-import { CompletionDto } from './completion.dto';
+import { CompletionCommand } from './commands/completion.command';
 
 @CustomInjectable()
 export class CompletionUseCase {
@@ -11,16 +11,10 @@ export class CompletionUseCase {
   async completion({
     prompt,
     context,
-    token_max,
-  }: CompletionDto): Promise<{ completion: string }> {
-    if (!prompt) {
-      throw new Error('El prompt es obligatorio');
-    }
-
+  }: CompletionCommand): Promise<{ completion: string }> {
     const result = await this.completionService.completionSdkAi({
       prompt,
       context,
-      token_max,
     });
 
     return result;

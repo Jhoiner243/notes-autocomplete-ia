@@ -1,8 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../../../../infraestructure/prisma/prisma.service';
+import { ICompletion } from '../../../../domain/repositories/completion.repository';
+
+export const CompletionRepositoryImpleToken = Symbol(
+  'CompletionRepositoryImpleToken',
+);
 
 @Injectable()
-export class CompletionRepositoryImple {
+export class CompletionRepositoryImple implements ICompletion {
   constructor(@Inject(PrismaService) private prismaService: PrismaService) {}
 
   async completionSdkAiTokesConsumed({
@@ -35,7 +40,7 @@ export class CompletionRepositoryImple {
     userId: string;
     tokensConsumed: number;
     costEstimated: number;
-    endpoint: 'Autocomplete';
+    endpoint: 'AUTOCOMPLETE';
   }): Promise<void> {
     await this.prismaService.usageRecord.create({
       data: {
