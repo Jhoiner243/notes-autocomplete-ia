@@ -1,24 +1,34 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Inject,
+  NotFoundException,
+  Param,
+} from '@nestjs/common';
 import { GetNotaByIdQuery } from '../../../application/commands/get-nota-by-id.query';
 import { GetNotaByIdUseCase } from '../../../application/use-cases/get-nota-by-id/get-nota-by-id.use-case';
 import { ROUTE_NOTAS } from '../route.constant';
+import {
+  GetNotaByIdResponseDto,
+  NotaToResponseDtoMapper,
+} from './get-nota-by-id.response.dto';
 
 @Controller(ROUTE_NOTAS)
 export class GetNotaByIdController {
-  constructor(private readonly useCase: GetNotaByIdUseCase) {}
+  constructor(
+    @Inject(GetNotaByIdUseCase) private readonly useCase: GetNotaByIdUseCase,
+  ) {}
 
   @Get(':id')
-  async handle(@Param('id') id: string) {
+  async handle(@Param('id') id: string): Promise<GetNotaByIdResponseDto> {
     const entity = await this.useCase.execute(new GetNotaByIdQuery(id));
-    if (!entity) return null;
-    return {
-      id: entity.id,
-      title: entity.title.value,
-      content: entity.content,
-      isDelete: entity.isDelete,
-      metadata: entity.metadata.getValuePrimitiveMetadata(),
-      version: entity.version,
-      createdAt: entity.createdAt,
-    };
+
+    if (!entity) {
+      throw new NotFoundException(
+        `La nota con el id "${id}" no fue encontrada.`,
+      );
+    }
+
+    return NotaToResponseDtoMapper.map(entity);
   }
 }

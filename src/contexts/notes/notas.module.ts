@@ -5,7 +5,6 @@ import { FindNotasByTitleUseCase } from './application/use-cases/find-notas-by-t
 import { FindNotasByUserUseCase } from './application/use-cases/find-notas-by-user/find-notas-by-user.use-case';
 import { GetNotaByIdUseCase } from './application/use-cases/get-nota-by-id/get-nota-by-id.use-case';
 import { UpdateNotaUseCase } from './application/use-cases/update-nota/update-nota.use-case';
-import { INotasRepository } from './domain/repository/notas.repository';
 import { CreateNotaController } from './infraestructure/http-api/create-nota/create-nota.controller';
 import { DeleteNotaController } from './infraestructure/http-api/delete-nota/delete-nota.controller';
 import { FindNotasByTitleController } from './infraestructure/http-api/find-notas-by-title/find-notas-by-title.controller';
@@ -39,6 +38,6 @@ import {
       useExisting: NotasPersistence,
     },
   ],
-  exports: [INotasRepository],
+  exports: [NotasPersistenceToken],
 })
 export class NotasModule {}

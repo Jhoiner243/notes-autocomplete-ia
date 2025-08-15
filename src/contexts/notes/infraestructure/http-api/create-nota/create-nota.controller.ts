@@ -9,7 +9,7 @@ import { CreateNotaDto } from './create-nota.dto';
 export class CreateNotaController {
   constructor(private readonly createNotaUseCase: CreateNotasUseCase) {}
 
-  @Post()
+  @Post('/create')
   async createNota(
     @Body() note: CreateNotaDto,
     @UserId() userId: string,

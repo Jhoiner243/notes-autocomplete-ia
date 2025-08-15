@@ -7,7 +7,7 @@ import { NotasEntity } from '../../domain/entities/create-notas.entity';
 import { INotasRepository } from '../../domain/repository/notas.repository';
 import { NotaMapper } from './nota.mapper';
 
-export const NotasPersistenceToken = Symbol('NotasPersistenceToken');
+export const NotasPersistenceToken = Symbol('INotasRepository');
 
 @CustomInjectable()
 export class NotasPersistence implements INotasRepository {

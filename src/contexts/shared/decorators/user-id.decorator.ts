@@ -12,17 +12,15 @@ type AuthenticatedRequest = {
   user?: AuthenticatedUser;
 };
 
-export const UserId = createParamDecorator(
-  (data: unknown, ctx: ExecutionContext) => {
-    const request: AuthenticatedRequest = ctx.switchToHttp().getRequest();
-    const user = request.user;
+export const UserId = createParamDecorator((ctx: ExecutionContext) => {
+  const request: AuthenticatedRequest = ctx.switchToHttp().getRequest();
+  const user = request.user;
 
-    if (!user || !user.id) {
-      throw new InternalServerErrorException(
-        'El decorador UserId se usó en una ruta sin un Guard de autenticación válido.',
-      );
-    }
+  if (!user || !user.id) {
+    throw new InternalServerErrorException(
+      'El decorador UserId se usó en una ruta sin un Guard de autenticación válido.',
+    );
+  }
 
-    return user.id;
-  },
-);
+  return user.id;
+});
