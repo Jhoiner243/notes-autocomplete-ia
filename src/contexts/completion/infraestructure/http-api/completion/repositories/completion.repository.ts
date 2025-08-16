@@ -15,7 +15,6 @@ export class CompletionRepositoryImple implements ICompletion {
   }: {
     userId: string;
   }): Promise<{ remainingTokens: number }> {
-    // Sum tokens consumed for the user across all usage records
     const aggregate = await this.prismaService.usageRecord.aggregate({
       where: {
         userId,

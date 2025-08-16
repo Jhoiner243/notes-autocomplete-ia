@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { CompletionUseCase } from './application/use-cases/completion/completion.use-case';
-import { CompletionController } from './infraestructure/http-api/completion/completion.controller';
+import { CompletionController } from './infraestructure/http-api/completion/autocomplete.controller';
 import {
   CompletionRepositoryImple,
   CompletionRepositoryImpleToken,
