@@ -15,6 +15,7 @@ export class CompletionService {
   ) {}
 
   async completionSdkAi({
+    model,
     userId,
     prompt,
     context,
@@ -22,6 +23,7 @@ export class CompletionService {
     userId: string;
     prompt: string;
     context: string;
+    model: string;
   }): Promise<{ completion: string }> {
     // Control de cuota
     const canUse = await this.quotaService.canUse(userId);
@@ -32,11 +34,11 @@ export class CompletionService {
     const system =
       'Eres un asistente que autocompleta notas médicas. Responde en el mismo idioma del usuario. Sé conciso y clínicamente útil.';
 
-    const model: LanguageModel =
-      this.modelSelectFromCompletion.SelectModelFromCompletion('gpt-4o-mini');
+    const modelSelect: LanguageModel =
+      this.modelSelectFromCompletion.SelectModelFromCompletion(model);
 
     const result = streamText({
-      model: model,
+      model: modelSelect,
       system,
       prompt: `${context}\n\nUsuario: ${prompt}\nAsistente:`,
       maxOutputTokens: 50,

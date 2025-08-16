@@ -1,4 +1,4 @@
-# Notes Back
+# Notas de enfermería
 
 Backend de notas construido con NestJS, Prisma y PostgreSQL. Incluye un servicio de autocompletado por IA para ayudar a redactar notas a partir de un contexto y un prompt.
 
@@ -172,6 +172,4 @@ prisma/
 - Prisma client faltante: corre `pnpm dlx prisma generate`.
 - 401/403 en IA: revisa `OPENAI_API_KEY`.
 
-## Licencia
-
-MIT (verifica si tu proyecto requiere un archivo LICENSE).
+## Licencia (MIT)

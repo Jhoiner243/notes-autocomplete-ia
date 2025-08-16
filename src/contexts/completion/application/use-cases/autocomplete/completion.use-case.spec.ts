@@ -18,6 +18,7 @@ describe('CompletionUseCase', () => {
     const expected = { completion: 'ok' };
     completionService.completionSdkAi.mockResolvedValue(expected);
     const result = await useCase.completion({
+      model: 'gpt-4o-mini',
       userId: 'u',
       prompt: 'p',
       context: 'c',

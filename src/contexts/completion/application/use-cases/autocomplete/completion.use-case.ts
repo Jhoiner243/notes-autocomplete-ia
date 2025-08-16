@@ -9,11 +9,13 @@ export class CompletionUseCase {
     @Inject(CompletionService) private completionService: CompletionService,
   ) {}
   async completion({
+    model,
     userId,
     prompt,
     context,
   }: CompletionCommand & { userId: string }): Promise<{ completion: string }> {
     const result = await this.completionService.completionSdkAi({
+      model,
       userId,
       prompt,
       context,
