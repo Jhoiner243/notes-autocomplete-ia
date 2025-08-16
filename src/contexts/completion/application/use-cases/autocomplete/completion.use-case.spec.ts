@@ -25,6 +25,7 @@ describe('CompletionUseCase', () => {
     });
     expect(result).toEqual(expected);
     expect(completionService.completionSdkAi).toHaveBeenCalledWith({
+      model: 'gpt-4o-mini',
       userId: 'u',
       prompt: 'p',
       context: 'c',
