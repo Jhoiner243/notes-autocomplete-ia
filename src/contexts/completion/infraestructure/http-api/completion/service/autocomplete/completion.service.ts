@@ -1,26 +1,34 @@
 import { Inject } from '@nestjs/common';
 import { LanguageModel, streamText } from 'ai';
-import { Injectable as CustomInjectable } from '../../../../../shared/dependency-injection/custom-injectable';
-import { ICompletion } from '../../../../domain/repositories/completion.repository';
-import { CompletionRepositoryImpleToken } from '../repositories/completion.repository';
-import { ModelSelectFromCompletion } from './model-select';
+import { Injectable as CustomInjectable } from '../../../../../../shared/dependency-injection/custom-injectable';
+import { IQuotaService } from '../../../../../domain/entities/control-cuota.interface';
+import { ModelSelectFromCompletion } from '../model-select';
+import { RedisQuotaServiceToken } from '../quotas-autocomplete/redis-quota.service';
 
 @CustomInjectable()
 export class CompletionService {
   constructor(
-    @Inject(CompletionRepositoryImpleToken)
-    private completionRepository: ICompletion,
     @Inject(ModelSelectFromCompletion)
     private modelSelectFromCompletion: ModelSelectFromCompletion,
+    @Inject(RedisQuotaServiceToken)
+    private quotaService: IQuotaService,
   ) {}
 
   async completionSdkAi({
+    userId,
     prompt,
     context,
   }: {
+    userId: string;
     prompt: string;
     context: string;
   }): Promise<{ completion: string }> {
+    // Control de cuota
+    const canUse = await this.quotaService.canUse(userId);
+    if (!canUse) {
+      throw new Error('Límite de cuota alcanzado.');
+    }
+
     const system =
       'Eres un asistente que autocompleta notas médicas. Responde en el mismo idioma del usuario. Sé conciso y clínicamente útil.';
 
@@ -36,6 +44,9 @@ export class CompletionService {
     });
 
     const completionText = await result.text;
+
+    const tokensUsed = completionText.length;
+    await this.quotaService.recordUsage(userId, tokensUsed);
 
     return { completion: completionText };
   }

@@ -1,13 +1,15 @@
-import { Body, Controller, Param, Post } from '@nestjs/common';
+import { Body, Controller, Inject, Param, Post } from '@nestjs/common';
 import { Injectable as CustomInjectable } from '../../../../shared/dependency-injection/custom-injectable';
-import { CompletionUseCase } from '../../../application/use-cases/completion/completion.use-case';
+import { CompletionUseCase } from '../../../application/use-cases/autocomplete/completion.use-case';
 import { AutoCompletionDto } from './autocomplete.dto';
 import { V1_COMPLETION } from './route.constants';
 
 @CustomInjectable()
 @Controller(V1_COMPLETION)
 export class CompletionController {
-  constructor(private completionUseCase: CompletionUseCase) {}
+  constructor(
+    @Inject(CompletionUseCase) private completionUseCase: CompletionUseCase,
+  ) {}
 
   @Post('/notes/:id/autocomplete')
   async completionNote(
@@ -15,6 +17,6 @@ export class CompletionController {
     @Body() body: AutoCompletionDto,
   ): Promise<{ completion: string }> {
     const { prompt, context } = body;
-    return this.completionUseCase.completion({ prompt, context });
+    return this.completionUseCase.completion({ userId: id, prompt, context });
   }
 }
