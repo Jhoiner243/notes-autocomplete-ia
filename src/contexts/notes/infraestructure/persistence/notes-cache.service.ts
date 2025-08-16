@@ -1,12 +1,13 @@
 import { Inject } from '@nestjs/common';
 import { Redis } from 'ioredis';
+import { REDIS_CLIENT } from '../../../../infraestructure/redis/redis.constants';
 import { Injectable as CustomInjectable } from '../../../shared/dependency-injection/custom-injectable';
 
 @CustomInjectable()
 export class NotesCacheService {
   private readonly ttlSeconds = 60 * 60;
 
-  constructor(@Inject('NOTES_CACHE_CLIENT') private readonly redis: Redis) {}
+  constructor(@Inject(REDIS_CLIENT) private readonly redis: Redis) {}
 
   async getNote(noteId: string): Promise<string | null> {
     return this.redis.get(this.getKey(noteId));

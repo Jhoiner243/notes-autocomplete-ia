@@ -1,5 +1,6 @@
 import { Inject } from '@nestjs/common';
 import { Redis } from 'ioredis';
+import { REDIS_CLIENT } from '../../../../../../../infraestructure/redis/redis.constants';
 import { Injectable as CustomInjectable } from '../../../../../../shared/dependency-injection/custom-injectable';
 import { IQuotaService } from '../../../../../domain/entities/control-cuota.interface';
 
@@ -10,7 +11,7 @@ export class RedisQuotaService implements IQuotaService {
   private readonly quotaLimit: number;
   private readonly quotaTtlSeconds: number;
 
-  constructor(@Inject('REDIS_CLIENT') private readonly redis: Redis) {
+  constructor(@Inject(REDIS_CLIENT) private readonly redis: Redis) {
     this.quotaLimit = parseInt(process.env.QUOTA_LIMIT || '10000', 10);
     this.quotaTtlSeconds = 24 * 60 * 60;
   }

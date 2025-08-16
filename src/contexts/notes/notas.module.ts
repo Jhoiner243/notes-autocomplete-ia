@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import Redis from 'ioredis';
 import { CreateNotasUseCase } from './application/use-cases/create-nota/create-nota.use-case';
 import { DeleteNotaUseCase } from './application/use-cases/delete-nota/delete-nota.use-case';
 import { FindNotasByTitleUseCase } from './application/use-cases/find-notas-by-title/find-notas-by-title.use-case';
@@ -39,17 +38,7 @@ import { NotesCacheService } from './infraestructure/persistence/notes-cache.ser
       provide: NotasPersistenceToken,
       useExisting: NotasPersistence,
     },
-    {
-      provide: 'NOTES_CACHE_CLIENT',
-      useFactory: () => {
-        return new Redis({
-          host: process.env.REDIS_HOST || '127.0.0.1',
-          port: parseInt(process.env.REDIS_PORT || '6379', 10),
-          password: process.env.REDIS_PASSWORD || undefined,
-          db: parseInt(process.env.REDIS_DB_NOTES_CACHE || '1', 10),
-        });
-      },
-    },
+
     NotesCacheService,
   ],
   exports: [NotasPersistenceToken, NotesCacheService],
