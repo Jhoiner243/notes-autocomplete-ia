@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { PrismaService } from '../../../../../../infraestructure/prisma/prisma.service';
-import { ICompletion } from '../../../../domain/repositories/completion.repository';
+import { PrismaService } from '../../../../infraestructure/prisma/prisma.service';
+import { ICompletion } from '../../domain/repositories/completion.repository';
 
 export const CompletionRepositoryImpleToken = Symbol(
   'CompletionRepositoryImpleToken',

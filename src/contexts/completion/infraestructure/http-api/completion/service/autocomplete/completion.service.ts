@@ -23,7 +23,7 @@ export class CompletionService {
     userId: string;
     prompt: string;
     context: string;
-    model: string;
+    model?: string;
   }): Promise<{ completion: string }> {
     // Control de cuota
     const canUse = await this.quotaService.canUse(userId);
@@ -35,7 +35,9 @@ export class CompletionService {
       'Eres un asistente que autocompleta notas médicas. Responde en el mismo idioma del usuario. Sé conciso y clínicamente útil.';
 
     const modelSelect: LanguageModel =
-      this.modelSelectFromCompletion.SelectModelFromCompletion(model);
+      this.modelSelectFromCompletion.SelectModelFromCompletion(
+        model ? model : 'gpt-4o-mini',
+      );
 
     const result = streamText({
       model: modelSelect,

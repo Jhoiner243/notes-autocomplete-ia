@@ -4,6 +4,7 @@ import { CompletionUseCase } from './application/use-cases/autocomplete/completi
 import { CompletionController } from './infraestructure/http-api/completion/autocomplete.controller';
 
 import { CompletionService } from './infraestructure/http-api/completion/service/autocomplete/completion.service';
+import { ModelSelectFromCompletion } from './infraestructure/http-api/completion/service/model-select';
 import {
   RedisQuotaService,
   RedisQuotaServiceToken,
@@ -20,6 +21,7 @@ import {
     CompletionService,
     CompletionRepositoryImple,
     RedisQuotaService,
+    ModelSelectFromCompletion,
     {
       provide: CompletionRepositoryImpleToken,
       useExisting: CompletionRepositoryImple,
@@ -44,6 +46,7 @@ import {
     CompletionUseCase,
     CompletionRepositoryImpleToken,
     RedisQuotaServiceToken,
+    ModelSelectFromCompletion,
   ],
 })
 export class CompletionModule {}
