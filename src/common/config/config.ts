@@ -5,13 +5,13 @@ import joi from 'joi';
 
 interface EnvVars {
   STRIPE_SECRET_KEY: string;
-  PORT: number;
+  ENDPOINT_STRIPE_WEBHOOK: string;
 }
 
 const envsSchema = joi
   .object({
-    PORT: joi.number().required(),
     STRIPE_SECRET_KEY: joi.string().required(),
+    ENDPOINT_STRIPE_WEBHOOK: joi.string().required(),
   })
   .unknown(true);
 
@@ -27,5 +27,5 @@ const envVars: EnvVars = value;
 
 export const envs = {
   stripeSecretKey: envVars.STRIPE_SECRET_KEY,
-  port: envVars.PORT,
+  endpointStripeWebhook: envVars.ENDPOINT_STRIPE_WEBHOOK,
 };

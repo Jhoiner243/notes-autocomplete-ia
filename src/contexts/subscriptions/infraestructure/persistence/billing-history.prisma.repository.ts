@@ -1,13 +1,18 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { PrismaClient } from '../../../../../generated/prisma';
-import { BillingHistoryEntity } from '../../../domain/entities/billing-history.entity';
-import { IBillingHistoryRepository } from '../../../domain/repositories/billing-history.repository';
+import { Injectable } from '@nestjs/common';
+import { BillingHistory } from '../../../../../generated/prisma';
+import { PrismaService } from '../../../../infraestructure/prisma/prisma.service';
+import { BillingHistoryEntity } from '../../domain/entities/billing-history.entity';
+import { IBillingHistoryRepository } from '../../domain/repositories/billing-history.repository';
+
+export const BillingHistoryRepositoryToken = Symbol(
+  'IBillingHistoryRepository',
+);
 
 @Injectable()
 export class BillingHistoryPrismaRepository
   implements IBillingHistoryRepository
 {
-  constructor(@Inject(PrismaClient) private readonly prisma: PrismaClient) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async create(history: BillingHistoryEntity): Promise<void> {
     await this.prisma.billingHistory.create({ data: { ...history } });
@@ -19,7 +24,7 @@ export class BillingHistoryPrismaRepository
     const list = await this.prisma.billingHistory.findMany({
       where: { subscriptionId },
     });
-    return list.map(this.toEntity);
+    return list.map((item) => this.toEntity(item));
   }
 
   async updateStatus(id: string, status: string): Promise<void> {
@@ -29,7 +34,7 @@ export class BillingHistoryPrismaRepository
     });
   }
 
-  private toEntity(bh: any): BillingHistoryEntity {
+  private toEntity(bh: BillingHistory): BillingHistoryEntity {
     return new BillingHistoryEntity(
       bh.id,
       bh.subscriptionId,

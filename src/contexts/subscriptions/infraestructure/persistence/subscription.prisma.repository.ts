@@ -1,16 +1,17 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import {
-  PrismaClient,
   StatusSubscription,
+  Subscription,
 } from '../../../../../generated/prisma';
+import { PrismaService } from '../../../../infraestructure/prisma/prisma.service';
 import { SubscriptionEntity } from '../../domain/entities/subscription.entity';
 import { ISubscriptionRepository } from '../../domain/repositories/subscription.repository';
 
+export const SubscriptionsRepositoryToken = Symbol('ISubscriptionRepository');
+
 @Injectable()
 export class SubscriptionPrismaRepository implements ISubscriptionRepository {
-  constructor(@Inject(PrismaClient) private readonly prisma: PrismaClient) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async findById(id: string): Promise<SubscriptionEntity | null> {
     const sub = await this.prisma.subscription.findUnique({ where: { id } });
@@ -50,7 +51,7 @@ export class SubscriptionPrismaRepository implements ISubscriptionRepository {
     });
   }
 
-  private toEntity(sub: any): SubscriptionEntity {
+  private toEntity(sub: Subscription): SubscriptionEntity {
     return new SubscriptionEntity(
       sub.id,
       sub.userId,

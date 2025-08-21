@@ -1,14 +1,14 @@
-/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
+
 import { Logger } from '@nestjs/common';
 import Stripe from 'stripe';
 import { envs } from '../../../common/config/config';
+import { Injectable } from '../../shared/dependency-injection/custom-injectable';
 
 // El tipo 'Interval' de Stripe para la recurrencia de un precio.
 type Interval = 'day' | 'week' | 'month' | 'year';
 
+@Injectable()
 export class StripeService {
   private readonly stripe: Stripe;
   private readonly logger = new Logger(StripeService.name);
@@ -19,11 +19,25 @@ export class StripeService {
     });
   }
 
+  constructorEvent(req: string | Buffer, signature: string): Stripe.Event {
+    let event: Stripe.Event;
+    try {
+      event = this.stripe.webhooks.constructEvent(
+        req,
+        signature,
+        envs.endpointStripeWebhook,
+      );
+    } catch (err) {
+      console.error(`⚠️  Webhook signature verification failed.`, err.message);
+      throw new Error('Webhook signature verification failed.');
+    }
+    return event;
+  }
+
   async createCustomer(
     email: string,
     userId: string,
   ): Promise<Stripe.Customer> {
-    // MEJORA: `return await` es redundante en la última línea de una función async.
     return await this.stripe.customers.create({
       email,
       metadata: { userId },
@@ -102,14 +116,13 @@ export class StripeService {
     successUrl: string,
     cancelUrl: string,
   ): Promise<Stripe.Checkout.Session> {
-    const session = await this.stripe.checkout.sessions.create({
+    return await this.stripe.checkout.sessions.create({
       customer: customerId,
       line_items: [{ price: priceId, quantity: 1 }],
       mode: 'subscription',
       success_url: successUrl,
       cancel_url: cancelUrl,
     });
-    return session;
   }
 
   handleWebhookEvent(event: Stripe.Event) {

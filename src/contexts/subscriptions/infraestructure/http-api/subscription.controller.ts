@@ -1,6 +1,14 @@
-import { Body, Controller, Get, Inject, Post, Req, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Post,
+  RawBodyRequest,
+  Req,
+  Res,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
-import Stripe from 'stripe';
 import { CreateSubscriptionUseCase } from '../../application/use-cases/create-subscription.use-case';
 import { GetPlansUseCase } from '../../application/use-cases/get-plans.use-case';
 import { HandleStripeWebhookUseCase } from '../../application/use-cases/handle-stripe-webhook.use-case';
@@ -32,8 +40,11 @@ export class SubscriptionController {
   }
 
   @Post('/stripe/webhook')
-  async handleWebhook(@Req() req: Request, @Res() res: Response) {
-    await this.webhookUC.execute(req.body as Stripe.Event);
+  async handleWebhook(
+    @Req() req: RawBodyRequest<Request>,
+    @Res() res: Response,
+  ) {
+    await this.webhookUC.execute(req);
     res.json({ received: true });
   }
 

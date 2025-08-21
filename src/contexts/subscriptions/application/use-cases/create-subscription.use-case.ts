@@ -1,17 +1,16 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { Inject } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { StatusSubscription } from '../../../../../generated/prisma';
 import { SubscriptionEntity } from '../../domain/entities/subscription.entity';
 import { ISubscriptionRepository } from '../../domain/repositories/subscription.repository';
+import { SubscriptionsRepositoryToken } from '../../infraestructure/persistence/subscription.prisma.repository';
 import { StripeService } from '../../infraestructure/stripe.service';
 import { CreateSubscriptionCommand } from '../commands/create-subscription.commnand';
 
+@Injectable()
 export class CreateSubscriptionUseCase {
   constructor(
-    @Inject('ISubscriptionRepository')
+    @Inject(SubscriptionsRepositoryToken)
     private readonly subscriptionRepo: ISubscriptionRepository,
     @Inject(StripeService) private readonly stripeService: StripeService,
   ) {}

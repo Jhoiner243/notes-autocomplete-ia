@@ -6,7 +6,6 @@ import { NotasModule } from './contexts/notes/notas.module';
 import { PrismaModule } from './contexts/shared/prisma/prisma.module';
 import { UserModule } from './contexts/users/users.module';
 import { RedisModule } from './infraestructure/redis/redis.module';
-import { DekModule } from './dek/dek.module';
 
 @Module({
   imports: [
@@ -22,7 +21,6 @@ import { DekModule } from './dek/dek.module';
         port: 6379,
       },
     }),
-    DekModule,
   ],
   controllers: [],
   providers: [],
