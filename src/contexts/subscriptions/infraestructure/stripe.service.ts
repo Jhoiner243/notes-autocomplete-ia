@@ -1,9 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-
-import { Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import Stripe from 'stripe';
 import { envs } from '../../../common/config/config';
-import { Injectable } from '../../shared/dependency-injection/custom-injectable';
 
 // El tipo 'Interval' de Stripe para la recurrencia de un precio.
 type Interval = 'day' | 'week' | 'month' | 'year';
@@ -19,19 +16,22 @@ export class StripeService {
     });
   }
 
-  constructorEvent(req: string | Buffer, signature: string): Stripe.Event {
-    let event: Stripe.Event;
+  constructorEvent(req: Buffer, signature: string): Stripe.Event {
     try {
-      event = this.stripe.webhooks.constructEvent(
+      return this.stripe.webhooks.constructEvent(
         req,
         signature,
-        envs.endpointStripeWebhook,
+        envs.endpointStripeWebhook ?? '',
       );
     } catch (err) {
-      console.error(`⚠️  Webhook signature verification failed.`, err.message);
+      if (err instanceof Error) {
+        console.error(
+          '⚠️  Webhook signature verification failed:',
+          err.message,
+        );
+      }
       throw new Error('Webhook signature verification failed.');
     }
-    return event;
   }
 
   async createCustomer(

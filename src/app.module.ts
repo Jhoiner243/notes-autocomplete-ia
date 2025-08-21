@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { CompletionModule } from './contexts/completion/completion.module';
 import { NotasModule } from './contexts/notes/notas.module';
 import { PrismaModule } from './contexts/shared/prisma/prisma.module';
+import { SubscriptionModule } from './contexts/subscriptions/infraestructure/subscription.module';
 import { UserModule } from './contexts/users/users.module';
 import { RedisModule } from './infraestructure/redis/redis.module';
 
@@ -14,6 +15,7 @@ import { RedisModule } from './infraestructure/redis/redis.module';
     UserModule,
     PrismaModule,
     CompletionModule,
+    SubscriptionModule,
     NotasModule,
     BullModule.forRoot({
       connection: {

@@ -12,9 +12,10 @@ import {
   SubscriptionPrismaRepository,
   SubscriptionsRepositoryToken,
 } from './persistence/subscription.prisma.repository';
+import { StripeModule } from './stripe.module';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, StripeModule],
   controllers: [SubscriptionController],
   providers: [
     CreateSubscriptionUseCase,

@@ -1,29 +1,24 @@
 /* eslint-disable */
-
 import 'dotenv/config';
-import joi from 'joi';
+import * as Joi from 'joi';
 
 interface EnvVars {
   STRIPE_SECRET_KEY: string;
   ENDPOINT_STRIPE_WEBHOOK: string;
 }
 
-const envsSchema = joi
-  .object({
-    STRIPE_SECRET_KEY: joi.string().required(),
-    ENDPOINT_STRIPE_WEBHOOK: joi.string().required(),
-  })
-  .unknown(true);
+const envsSchema = Joi.object<EnvVars>({
+  STRIPE_SECRET_KEY: Joi.string().required(),
+  ENDPOINT_STRIPE_WEBHOOK: Joi.string().required(),
+}).unknown(true);
 
-const { error, value } = envsSchema.validate(
-  process.env,
-) as joi.ValidationResult<EnvVars>;
+const { error, value } = envsSchema.validate(process.env);
 
 if (error) {
-  throw new Error(`Config validation error: \${error.message}`);
+  throw new Error(`Config validation error: ${error.message}`);
 }
 
-const envVars: EnvVars = value;
+const envVars = value as EnvVars;
 
 export const envs = {
   stripeSecretKey: envVars.STRIPE_SECRET_KEY,
