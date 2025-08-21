@@ -13,6 +13,7 @@ import { CreateSubscriptionUseCase } from '../../application/use-cases/create-su
 import { GetPlansUseCase } from '../../application/use-cases/get-plans.use-case';
 import { HandleStripeWebhookUseCase } from '../../application/use-cases/handle-stripe-webhook.use-case';
 import { Plan } from '../../domain/value-objects/planes.value-object';
+import { SubscriptionStartDto } from './subscription-start.dto';
 
 @Controller()
 export class SubscriptionController {
@@ -28,13 +29,7 @@ export class SubscriptionController {
   @Post('/subscriptions/start')
   async startSubscription(
     @Body()
-    body: {
-      userId: string;
-      email: string;
-      planName: string;
-      amount: number;
-      currency?: string;
-    },
+    body: SubscriptionStartDto,
   ) {
     return this.createSubUC.execute(body);
   }
