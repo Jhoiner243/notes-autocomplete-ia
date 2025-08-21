@@ -80,6 +80,7 @@ enum StatusSubscription {
   ACTIVE
   PAST_DUE
   CANCELED
+  PENDING
 }
 
 enum UserRole {
