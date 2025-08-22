@@ -2,6 +2,7 @@ import { Inject, Injectable, RawBodyRequest } from '@nestjs/common';
 import { Request } from 'express';
 import { StatusSubscription } from '../../../../../generated/prisma';
 import { envs } from '../../../../common/config/config';
+import { SubscriptionExceptionError } from '../../domain/exceptions/subscription.exception';
 import { IBillingHistoryRepository } from '../../domain/repositories/billing-history.repository';
 import { ISubscriptionRepository } from '../../domain/repositories/subscription.repository';
 import { BillingHistoryRepositoryToken } from '../../infraestructure/persistence/billing-history.prisma.repository';
@@ -25,15 +26,23 @@ export class HandleStripeWebhookUseCase {
       console.log('event', event);
       if (event.type === 'invoice.payment_failed') {
         const invoice = event.data.object;
+
+        if (!invoice.id) {
+          throw new SubscriptionExceptionError(
+            'No se pudo obtener el id de la factura',
+          );
+        }
+
         await this.subscriptionRepo.updateStatus(
-          (invoice.id as string) ?? '',
+          invoice.id,
           StatusSubscription.CANCELED,
         );
       }
 
       if (event.type === 'payment_intent.succeeded') {
+        const invoice = event.data.object;
         await this.subscriptionRepo.updateStatus(
-          event.id,
+          invoice.id,
           StatusSubscription.ACTIVE,
         );
       }

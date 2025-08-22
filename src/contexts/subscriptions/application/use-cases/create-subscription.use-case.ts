@@ -42,7 +42,7 @@ export class CreateSubscriptionUseCase {
       session.id,
       product.id,
       //El status de la suscripción se actualizará en el webhook y aquí se establece PENDING
-      StatusSubscription.ACTIVE,
+      StatusSubscription.PENDING as StatusSubscription,
       new Date(),
     );
 
