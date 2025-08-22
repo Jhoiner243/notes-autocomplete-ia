@@ -3,6 +3,7 @@ import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './contexts/shared/filters/http-exception.filter';
+import { corsConfiguration } from './infraestructure/cors/configuration-cors';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -14,7 +15,7 @@ async function bootstrap() {
   // =================================================================
 
   // Habilita CORS para permitir peticiones desde el frontend
-  app.enableCors();
+  app.enableCors(corsConfiguration);
 
   // Opcional: Establece un prefijo global para todas las rutas (ej. /api/v1)
   app.setGlobalPrefix('api');
