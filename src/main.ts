@@ -6,7 +6,7 @@ import { AllExceptionsFilter } from './contexts/shared/filters/http-exception.fi
 import { corsConfiguration } from './infraestructure/cors/configuration-cors';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { cors: true });
   const logger = new Logger('Bootstrap');
   const PORT = process.env.PORT ?? 3000;
 

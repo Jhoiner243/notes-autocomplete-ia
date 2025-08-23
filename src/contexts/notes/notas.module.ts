@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { PrismaService } from '../../infraestructure/prisma/prisma.service';
 import { CreateNotasUseCase } from './application/use-cases/create-nota/create-nota.use-case';
 import { DeleteNotaUseCase } from './application/use-cases/delete-nota/delete-nota.use-case';
 import { FindNotasByTitleUseCase } from './application/use-cases/find-notas-by-title/find-notas-by-title.use-case';
@@ -27,6 +28,7 @@ import { NotesCacheService } from './infraestructure/persistence/notes-cache.ser
     FindNotasByUserController,
   ],
   providers: [
+    PrismaService,
     CreateNotasUseCase,
     GetNotaByIdUseCase,
     UpdateNotaUseCase,

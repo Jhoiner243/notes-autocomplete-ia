@@ -1,6 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { RedisModule } from '../../infraestructure/redis/redis.module';
-import { PrismaModule } from '../shared/prisma/prisma.module';
+import { TestingModule } from '@nestjs/testing';
+import { PrismaService } from '../../infraestructure/prisma/prisma.service';
+import { REDIS_CLIENT } from '../../infraestructure/redis/redis.constants';
+import {
+  createTestingModuleWithMocks,
+  mockPrismaService,
+  mockRedisService,
+} from '../../test/setup';
 import { CreateNotasUseCase } from './application/use-cases/create-nota/create-nota.use-case';
 import { DeleteNotaUseCase } from './application/use-cases/delete-nota/delete-nota.use-case';
 import { FindNotasByTitleUseCase } from './application/use-cases/find-notas-by-title/find-notas-by-title.use-case';
@@ -35,9 +40,19 @@ describe('NotasModule', () => {
   let notesCacheService: NotesCacheService;
 
   beforeEach(async () => {
-    module = await Test.createTestingModule({
-      imports: [NotasModule, PrismaModule, RedisModule],
-    }).compile();
+    module = await createTestingModuleWithMocks(
+      [NotasModule],
+      [
+        {
+          provide: REDIS_CLIENT,
+          useValue: mockRedisService,
+        },
+        {
+          provide: PrismaService,
+          useValue: mockPrismaService,
+        },
+      ],
+    );
 
     // Controllers
     createNotaController =
@@ -103,14 +118,12 @@ describe('NotasModule', () => {
   });
 
   describe('Dependency Injection', () => {
-    it('should inject PrismaModule correctly', () => {
-      const prismaModule = module.get(PrismaModule);
-      expect(prismaModule).toBeDefined();
-    });
-
-    it('should inject RedisModule correctly', () => {
-      const redisModule = module.get(RedisModule);
-      expect(redisModule).toBeDefined();
+    it('should inject mock services correctly', () => {
+      const redisClient = module.get<typeof mockRedisService>(REDIS_CLIENT);
+      const databaseService =
+        module.get<typeof mockPrismaService>(PrismaService);
+      expect(redisClient).toBeDefined();
+      expect(databaseService).toBeDefined();
     });
 
     it('should resolve all dependencies without circular references', () => {
