@@ -1,5 +1,5 @@
 import { Inject } from '@nestjs/common';
-import { LanguageModel, streamText } from 'ai';
+import { type LanguageModel, streamText, StreamTextResult } from 'ai';
 import { Injectable as CustomInjectable } from '../../../../../../shared/dependency-injection/custom-injectable';
 import { IQuotaService } from '../../../../../domain/entities/control-cuota.interface';
 import { ModelSelectFromCompletion } from '../model-select';
@@ -24,15 +24,12 @@ export class CompletionService {
     prompt: string;
     context: string;
     model?: string;
-  }): Promise<{ completion: string }> {
+  }): Promise<StreamTextResult<any, any>> {
     // Control de cuota
     const canUse = await this.quotaService.canUse(userId);
     if (!canUse) {
       throw new Error('Límite de cuota alcanzado.');
     }
-
-    const system =
-      'Eres un asistente que autocompleta notas médicas. Responde en el mismo idioma del usuario. Sé conciso y clínicamente útil.';
 
     const modelSelect: LanguageModel =
       this.modelSelectFromCompletion.SelectModelFromCompletion(
@@ -41,17 +38,11 @@ export class CompletionService {
 
     const result = streamText({
       model: modelSelect,
-      system,
       prompt: `${context}\n\nUsuario: ${prompt}\nAsistente:`,
-      maxOutputTokens: 50,
-      temperature: 0.2,
+      maxOutputTokens: 20,
+      temperature: 0.75,
     });
 
-    const completionText = await result.text;
-
-    const tokensUsed = completionText.length;
-    await this.quotaService.recordUsage(userId, tokensUsed);
-
-    return { completion: completionText };
+    return result;
   }
 }
